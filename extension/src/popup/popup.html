@@ -2,22 +2,89 @@
 <html>
 
 <head>
+
     <style>
-        body {
-            width: 500px;
-            padding: 10px;
+        @font-face {
+            font-family: 'ROG';
+            src: url('/assets/fonts/ROG.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
 
+        @keyframes border {
+            0% {
+                border-radius: 0px;
+            }
+
+            50% {
+                border-radius: 18px;
+            }
+
+            100% {
+                border-radius: 0px;
+            }
+        }
+
+        body {
+            width: 700px;
+            height: 100px;
+            /*background-color: #3260f5ac;*/
+        }
+
+        h2,
+        h3 {
+            font-family: 'ROG', Arial, sans-serif;
+        }
+
+        .nav-title {
+            /*
+            background-color: blue;
+            border: 2px solid slateblue;
+            */
+            border-radius: 18px;
+            animation: border 8s infinite;
+            text-align: center;
+            color: #c9b2a5;
+        }
+
+        .nav-btn {
+            /*
+            background-color: #8372ef;
+            border: 2px solid #383f3f;
+            */
+            border-radius: 18px;
+            animation: border 8s infinite;
+            text-align: center;
+            color: #0e0906b5;
+        }
+
+        input,
         button {
-            width: 100%;
             padding: 10px;
+            margin: 10px;
         }
     </style>
 </head>
 
 <body>
-    <img src="../../assets/images/logo512.png" style="width: 100%; height: auto; margin-bottom: 10px;">
+    <div class="nav-title">
+        <h2>HexLock</h2>
+        <nav>
+            <button class="nav-btn" disabled="true" id="app-pwds">Passwords</button>
+            <button class="nav-btn" disabled="true" id="app-get">Get the App</button>
+            <button class="nav-btn" disabled="true" id="app-help">Help</button>
+            <button class="nav-btn" disabled="true" id="app-settings">Settings</button>
+        </nav>
+    </div>
+    <div id="content-body">
+        <h3>Authorization</h3>
+        <h5 id="message">Enter the password you have created to gain access to this app.</h5>
+        <input id="pwd" type="password">
+        <button id="finished">Submit</button>
+    </div>
     <script src="popup.js"></script>
+    <script src="/libs/ultraluxe.js"></script>
 </body>
 
 </html>

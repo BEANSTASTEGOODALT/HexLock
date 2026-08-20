@@ -1,7 +1,13 @@
 const iconURL = chrome.runtime.getURL('assets/icons/icon128.png');
+const generatedPasswords = new WeakSet();
 
 function showHintIcon(input) {
+
     hideHintIcon();
+
+    if (generatedPasswords.has(input)) {
+        return;
+    }
 
     const rect = input.getBoundingClientRect();
 
@@ -10,7 +16,10 @@ function showHintIcon(input) {
     hintIcon.id = 'hint-icon';
 
     hintIcon.innerHTML = `
-        <img src="${iconURL}"
+        <img
+            src="
+            ${iconURL}
+            "
              style="
                 width: auto;
                 height: ${rect.height-5}px;
@@ -23,12 +32,15 @@ function showHintIcon(input) {
                 z-index: 999999;
                 pointer-events: auto;
              "
-             onclick="
-                generatePassword(${input.id || "ID_NOT_FOUND"});
-             "
              >
     `;
+
     document.body.appendChild(hintIcon);
+
+    hintIcon.addEventListener('click', () => {
+        generatePassword(input.id, input);
+        hideHintIcon();
+    });
 }
 
 function hideHintIcon() {
@@ -46,7 +58,9 @@ document.addEventListener('focusin', (event) => {
         input instanceof HTMLInputElement &&
         input.type === 'password'
     ) {
-        showHintIcon(input);
+        setTimeout(() => {
+            showHintIcon(input);
+        }, 125);
     }
 });
 
@@ -72,7 +86,7 @@ document.addEventListener('focusout', (event) => {
             if (document.activeElement !== input) {
                 hideHintIcon();
             }
-        }, 100);
+        }, 125);
     }
 });
 
@@ -83,7 +97,10 @@ window.addEventListener('scroll', () => {
     }
 });
 
-function generatePassword(inputId) {
+function generatePassword(inputId, input) {
+    if (generatedPasswords.inputId) {
+        return;
+    }
     if (!inputId || inputId === "ID_NOT_FOUND") {
         item = document.activeElement;
     } else {
@@ -99,5 +116,14 @@ function generatePassword(inputId) {
     for (let i = 0, n = charset.length; i < length; ++i) {
         password += charset.charAt(Math.floor(Math.random() * n));
     }
-    item.value = password;
-}
+    item.value  = password;
+    generatedPasswords.add(input);
+    let amount = 0;
+    document.querySelectorAll('input[type=password]').forEach((pass) => {
+        if (amount < 2) {
+            pass.value = password;
+            generatedPasswords.add(pass);
+            amount++;
+        }
+        });
+    }
