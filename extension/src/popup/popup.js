@@ -1,3 +1,5 @@
+import { contactDB } from "/libs/db.js"
+
 const msg = document.getElementById("message");
 const btn = document.getElementById("finished");
 const pwd = document.getElementById("pwd");
@@ -9,7 +11,14 @@ const page = document.getElementById("content-body");
 
 const lockTime = 5 * 60 * 1000;
 let locked = false;
-let attempts = 5;
+
+if (!localStorage.getItem("attempts")) {
+    localStorage.setItem("attempts", 5);
+}
+
+if (localStorage.getItem("attempts") < 5) {
+    msg.innerText = `Incorrect password! ${localStorage.getItem("attempts")} attempts until lockout!`;
+}
 
 const finishTime = Number(localStorage.getItem("finishTime") || 0);
 
@@ -28,7 +37,7 @@ function waitTime() {
 
     if (Date.now() >= finishTime) {
         locked = false;
-        attempts = 5;
+        localStorage.setItem("attempts", 5);
         localStorage.setItem("finishTime", "0");
         btn.removeAttribute("disabled");
         msg.innerText = "Lockout finished! Enter the password you have created to gain access to this app.";
@@ -66,11 +75,11 @@ btn.addEventListener("click", () => {
     }
 
     if (pwd.value !== decrypt(savedLogin)) {
-        if (attempts > 1) {
-            attempts--;
-            msg.innerText = `Incorrect password! ${attempts} attempts until lockout!`;
+        if (localStorage.getItem("attempts") > 1) {
+            localStorage.setItem("attempts", localStorage.getItem("attempts") - 1);
+            msg.innerText = `Incorrect password! ${localStorage.getItem("attempts")} attempts until lockout!`;
         } else {
-            attempts = 5;
+            localStorage.setItem("attempts", 5);
             locked = true;
             btn.setAttribute("disabled", true);
 
@@ -79,7 +88,7 @@ btn.addEventListener("click", () => {
             waitTime();
         }
     } else {
-        attempts = 5;
+        localStorage.setItem("attempts", 5);
         enableMenu();
         pwdNav.click();
     }
@@ -128,21 +137,26 @@ pwdNav.addEventListener("click", () => {
         <div id="results">
             You currently have no saved passwords!
         </div>
+        <script>
+            let res = document.getElementById("results");
+            res.innerText = ${contactDB("SELECT", "passwords")};
+        </script>
     `;
 });
 
 settingsNav.addEventListener("click", () => {
-        page.innerHTML = `
+    page.innerHTML = `
         <h3>Settings</h3>
         <h5 id="message">Edit settings</h5>
         <div id="settings">
-            No settings yet!
+            <label for="db">Enter your database info to store encrypted passwords.</label>
+            <input name="db" id="dbdata">
         </div>
     `;
 });
 
 helpNav.addEventListener("click", () => {
-        page.innerHTML = `
+    page.innerHTML = `
         <h3>Help</h3>
         <div id="help">
             No help yet!
@@ -151,7 +165,7 @@ helpNav.addEventListener("click", () => {
 });
 
 getAppNav.addEventListener("click", () => {
-        page.innerHTML = `
+    page.innerHTML = `
         <h3>Get the app!</h3>
         <h5 id="message">Availible on nothing right now.</h5>
         <div id="getApp">

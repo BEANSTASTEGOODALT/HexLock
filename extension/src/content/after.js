@@ -1,3 +1,5 @@
+import { contactDB } from "/libs/db.js"
+
 const iconURL = chrome.runtime.getURL('assets/icons/icon128.png');
 const generatedPasswords = new WeakSet();
 
@@ -60,7 +62,7 @@ document.addEventListener('focusin', (event) => {
     ) {
         setTimeout(() => {
             showHintIcon(input);
-        }, 125);
+        }, 150);
     }
 });
 
@@ -86,7 +88,7 @@ document.addEventListener('focusout', (event) => {
             if (document.activeElement !== input) {
                 hideHintIcon();
             }
-        }, 125);
+        }, 150);
     }
 });
 
